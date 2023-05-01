@@ -16,7 +16,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 
 
-
 public class Executable extends Application {
     private Pane root;
     private Group caracteres;
