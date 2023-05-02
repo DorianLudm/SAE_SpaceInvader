@@ -45,22 +45,22 @@ public class Boss{
     }
 
     public EnsembleChaines getEnsembleChaines() {
-        EnsembleChaines lesChainesRes = new EnsembleChaines();
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()  , "              ▄▄▄▄▄▄▄▄████████████████▄▄▄▄▄▄▄▄              ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-1, "      ▄▄████████████████████████████████████████████▄▄      ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-2, "   ▄██████▀▀▀▀████████▀▀▀▀████████▀▀▀▀████████▀▀▀▀██████▄   ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-3, " ▄████████    ████████    ████████    ████████    ████████▄ ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-4, "██████████▄▄▄▄████████▄▄▄▄████████▄▄▄▄████████▄▄▄▄██████████");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-5, " ▀▀▀▀██████████████▀▀▀▀▀▀██████████▀▀▀▀▀▀██████████████▀▀▀▀ ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-6, "       ██████████         ████████         ██████████       ");
-        lesChainesRes.ajouteChaine((int) getX(), (int) getY()-7, "        ▀▀████▀▀          ▀▀▀▀▀▀▀▀          ▀▀████▀▀        ");
-        return lesChainesRes;
+        this.LesChainesBoss = new EnsembleChaines();
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()  , "              ▄▄▄▄▄▄▄▄████████████████▄▄▄▄▄▄▄▄              ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-1, "      ▄▄████████████████████████████████████████████▄▄      ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-2, "   ▄██████▀▀▀▀████████▀▀▀▀████████▀▀▀▀████████▀▀▀▀██████▄   ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-3, " ▄████████    ████████    ████████    ████████    ████████▄ ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-4, "██████████▄▄▄▄████████▄▄▄▄████████▄▄▄▄████████▄▄▄▄██████████");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-5, " ▀▀▀▀██████████████▀▀▀▀▀▀██████████▀▀▀▀▀▀██████████████▀▀▀▀ ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-6, "       ██████████         ████████         ██████████       ");
+        this.LesChainesBoss.ajouteChaine((int) getX(), (int) getY()-7, "        ▀▀████▀▀          ▀▀▀▀▀▀▀▀          ▀▀████▀▀        ");
+        return this.LesChainesBoss;
     }
 
     public void evolue(){
         if(this.getDirection() == "droite"){
-            if(this.getX() + 59 <= 300){
-                this.posX += 2;
+            if(this.getX() + 59 <= 297){
+                this.posX += 3;
             }
             else{
                 this.setDirection("gauche");
@@ -68,8 +68,8 @@ public class Boss{
         }
         else{
             if(this.getDirection() == "gauche"){
-                if(this.getX() > 2){
-                    this.posX -= 2;
+                if(this.getX() > 3){
+                    this.posX -= 3;
                 }
                 else{
                     this.setDirection("droite");

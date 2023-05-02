@@ -54,7 +54,7 @@ public class Alien {
     }
 
     public EnsembleChaines getEnsembleChaines() {
-        this. LesChainesAlien = new EnsembleChaines();
+        this.LesChainesAlien = new EnsembleChaines();
         if(this.numberSprite == 0){
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY  , "    ██          ██    ");
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-1, "      ██      ██      ");

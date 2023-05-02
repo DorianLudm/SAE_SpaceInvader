@@ -18,6 +18,10 @@ public class GestionJeu{
     private float timer;
     private int multi;
     private int typeDerniereVague;
+    private int nombreAlienTues;
+    private int nombreProjTiré;
+    private double tirDurantBoss;
+    private double tirTouché;
 
     public GestionJeu(){
         this.chaines = new EnsembleChaines();
@@ -33,8 +37,12 @@ public class GestionJeu{
         this.score = 0;
         this.tempsDeSurvie = 0;
         this.timer = 0;
-        this.multi = 3;
+        this.multi = 10;
         this.typeDerniereVague = 0;
+        this.nombreAlienTues = 0;
+        this.nombreProjTiré = 0;
+        this.tirDurantBoss = 0;
+        this.tirTouché = 0;
     }
 
     public int getHauteur(){
@@ -59,6 +67,7 @@ public class GestionJeu{
         if(shootingCooldown == 0 && !this.gameOver){
             this.listeProj.add(new Projectile(leVaisseau.positionCanon(), 8));
             shootingCooldown = 20;
+            this.nombreProjTiré += 1;
         }
     }
 
@@ -75,6 +84,7 @@ public class GestionJeu{
             for(Boss bossElem: boss){
                 this.chaines.union(bossElem.getEnsembleChaines());
             }
+            this.chaines.union(this.getText());
         return this.chaines;
     }
 
@@ -152,7 +162,32 @@ public class GestionJeu{
     }
 
     public void spawnBoss(){
-        this.boss.add(new Boss(this.getLargeur()/2 -  15, this.getHauteur()-5));
+        this.boss.add(new Boss(this.getLargeur()/2 -  15, this.getHauteur()-15));
+    }
+
+    public EnsembleChaines getText(){
+        int hauteur = this.getHauteur() - 1;
+        EnsembleChaines text = new EnsembleChaines();
+        String diff = String.valueOf(this.multi);
+        if(this.multi == 10){
+            diff = "UFO";
+            text.ajouteChaine(25, hauteur - 2, "Point de vie de UFO");
+            double accu = 0;
+            if(this.tirDurantBoss != 0){
+                accu = this.tirTouché / this.tirDurantBoss * 100;
+            }
+            text.ajouteChaine(5, hauteur, ("Score: " + this.score + "   Temps de survie: " + (int) this.tempsDeSurvie) + "   Difficulté: " + diff + "   Précision: " + String.format("%.2f", accu) +"%");
+            String chainePv = "";
+            for(int i = 0; i < this.boss.get(0).getHp(); i++){
+                chainePv += "█████";
+            text.ajouteChaine(25, hauteur-4, chainePv);
+            text.ajouteChaine(25, hauteur-5, chainePv);
+            }
+        }
+        else{
+            text.ajouteChaine(5, hauteur, ("Score: " + this.score + "   Temps de survie: " + (int) this.tempsDeSurvie) + "   Difficulté: " + diff + "   Nombre d'ennemis tué: " + this.nombreAlienTues+ "   Nombre de projectile tiré: " + this.nombreProjTiré);
+        }
+        return text;
     }
 
     public void jouerUnTour(){
@@ -178,7 +213,7 @@ public class GestionJeu{
             }
         }
         //Génération des aliens
-        if(!gameOver && this.timer < 50 && this.multi < 6){
+        if(!gameOver && this.timer < 60 && this.multi < 3){
             boolean alienSommetEcran = false;
             for(Alien alien: this.aliens){
                 if(alien.getY() == 85){
@@ -204,6 +239,9 @@ public class GestionJeu{
                 projectileElem.evolue(this.multi);
                 if(projectileElem.getY() > this.getHauteur()){
                     listeProjectilesSupp.add(projectileElem);
+                    if(this.multi == 10){
+                        this.tirDurantBoss += 1;
+                    }
                 }
             }
         }
@@ -250,19 +288,24 @@ public class GestionJeu{
                         if(projectileElement.getY() <= alienElement.getY() && projectileElement.getY() >= alienElement.getY() - 8){
                             listeProjectilesSupp.add(projectileElement);
                             listeAlienSupp.add(alienElement);
+                            this.nombreAlienTues += listeAlienSupp.size();
                         }
                     }
                 }
             }
         }
+        //Collisions avec le boss
         List<Boss> listeBossSupp = new ArrayList<>();
         for(Projectile projectileElement: this.listeProj){
             for(Boss bossElem: boss){
                 //Check que le projectile soit dans l'alien au niveau des X
-                if(projectileElement.getX() + 1 >= bossElem.getX() && projectileElement.getX() <= bossElem.getX() + 52){
+                if(projectileElement.getX() + 1 >= bossElem.getX() && projectileElement.getX() <= bossElem.getX() + 59){
                     //Check que le projectile soit dans l'alien au niveau des Y
                     if(projectileElement.getY() <= bossElem.getY() && projectileElement.getY() >= bossElem.getY() - 7){
                         listeProjectilesSupp.add(projectileElement);
+                        this.tirTouché += 1;
+                        this.tirDurantBoss += 1;
+                        this.score += 50*listeProjectilesSupp.size()*this.multi;
                         if(bossElem.removeHp()){
                         listeBossSupp.add(bossElem);
                         }
@@ -280,6 +323,7 @@ public class GestionJeu{
         }
         if (!listeBossSupp.isEmpty()){
             this.boss.removeAll(listeBossSupp);
+            this.score += 10000*listeAlienSupp.size()*this.multi;
         }
         //Incrémentation des différents attributs
         this.tourDeJeu += 1;
