@@ -80,10 +80,13 @@ public class Alien {
         return this. LesChainesAlien;
     }
 
-    public void cycleSprite(){
+    public void cycleSprite0to1(){
         if(this.numberSprite == 0){
             this.numberSprite = 1;
         }
+    }
+
+    public void cycleSprite1to0(){
         if(this.numberSprite == 1){
             this.numberSprite = 0;
         }

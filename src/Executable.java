@@ -52,7 +52,6 @@ public class Executable extends Application {
         timeline.play();
     }
 
-
     @Override
         public void start(Stage primaryStage) {
             primaryStage.setTitle("IUTO Space Invader");
@@ -72,6 +71,8 @@ public class Executable extends Application {
                     gestionnaire.toucheDroite();
                 if(key.getCode()==KeyCode.SPACE)
                     gestionnaire.toucheEspace();
+                if(key.getCode()==KeyCode.ESCAPE)
+                    gestionnaire.toucheEscape();
             });
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);

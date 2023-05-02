@@ -1,7 +1,7 @@
 public class Projectile {
-    private double posX;
-    private double posY;
-    private EnsembleChaines LesChainesProj;
+    protected double posX;
+    protected double posY;
+    protected EnsembleChaines LesChainesProj;
 
     public Projectile(double X, double Y){
         this.posX = X;
