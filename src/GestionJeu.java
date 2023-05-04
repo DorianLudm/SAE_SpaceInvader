@@ -6,8 +6,9 @@ public class GestionJeu{
     private EnsembleChaines chaines;
     private Vaisseau leVaisseau;
     private List<Projectile> listeProj;
+    private List<ProjectileAlien> listeProjAlien;
     private List<Alien> aliens;
-    private List<Boss> boss;
+    private List<Boss> boss;    
     private int tourDeJeu;
     private int shootingCooldown;
     private float spawnCooldown;
@@ -23,11 +24,13 @@ public class GestionJeu{
     private double tirDurantBoss;
     private double tirTouché;
     private int statut;
+    private int shieldUse;
 
     public GestionJeu(){
         this.chaines = new EnsembleChaines();
         this.leVaisseau = new Vaisseau();
         this.listeProj = new ArrayList<>();
+        this.listeProjAlien = new ArrayList<>();
         this.aliens = new ArrayList<>();
         this.boss = new ArrayList<>();
         this.tourDeJeu = 0;
@@ -38,13 +41,14 @@ public class GestionJeu{
         this.score = 0;
         this.tempsDeSurvie = 0;
         this.timer = 0;
-        this.multi = 1;
+        this.multi = 10;
         this.typeDerniereVague = 0;
         this.nombreAlienTues = 0;
         this.nombreProjTiré = 0;
         this.tirDurantBoss = 0;
         this.tirTouché = 0;
         this.statut = 0;
+        this.shieldUse = 0;
     }
 
     public int getHauteur(){
@@ -56,18 +60,30 @@ public class GestionJeu{
     }
 
     public void toucheGauche(){
-        if(leVaisseau.getPosX() - (5*this.multi) >= 0)
-            leVaisseau.deplace(-5, this.multi);
+        if(this.statut == 1){
+            int decal = this.multi;
+            if(decal == 10){
+                decal = 1;
+            }
+            if(leVaisseau.getPosX() - (5*decal) >= 0)
+                leVaisseau.deplace(-5, decal);
+        }
     }
     
     public void toucheDroite(){
-        if(leVaisseau.getPosX() + (5*this.multi) < this.getLargeur() - 21)
-            leVaisseau.deplace(5, this.multi);
+        if(this.statut == 1){
+            int decal = this.multi;
+            if(decal == 10){
+                decal = 1;
+            }
+            if(leVaisseau.getPosX() + (5*decal) < this.getLargeur() - 21)
+                leVaisseau.deplace(5, decal);
+        }
     }
 
     public void toucheEspace(){
         if(this.statut == 1){
-            if(shootingCooldown == 0 && !this.gameOver){
+            if(shootingCooldown == 0){
                 this.listeProj.add(new Projectile(leVaisseau.positionCanon(), 8));
                 shootingCooldown = 20;
                 this.nombreProjTiré += 1;
@@ -88,6 +104,30 @@ public class GestionJeu{
         }
     }
 
+    public void toucheR(){
+        if(this.multi == 10 && this.statut == 1 && shootingCooldown == 0){
+            shootingCooldown = 75;
+            this.shieldUse += 1;
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 14, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 12, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 11, 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 9 , 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 7 , 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 6 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 4 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 2 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon()     , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 2 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 4 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 6 , 8, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 7 , 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 9 , 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 11, 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 12, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 14, 6, true));
+        }
+    }
+
     public EnsembleChaines getChaines(){
         this.chaines = new EnsembleChaines();
         if(this.statut == 0 || this.statut == -1)
@@ -97,6 +137,9 @@ public class GestionJeu{
                 this.chaines.union(leVaisseau.getEnsembleChaines());
                 for(Projectile proj: this.listeProj){
                     this.chaines.union(proj.getEnsembleChaines());
+                }
+                for(ProjectileAlien projAlien: this.listeProjAlien){
+                    this.chaines.union(projAlien.getEnsembleChaines());
                 }
                 for(Alien alien: aliens){
                     this.chaines.union(alien.getEnsembleChaines());
@@ -225,7 +268,7 @@ public class GestionJeu{
                 if(this.tirDurantBoss != 0){
                     accu = this.tirTouché / this.tirDurantBoss * 100;
                 }
-                text.ajouteChaine(5, hauteur, ("Score: " + this.score + "   Temps de survie: " + (int) this.tempsDeSurvie) + "   Difficulté: " + diff + "   Précision: " + String.format("%.2f", accu) +"%");
+                text.ajouteChaine(5, hauteur, ("Score: " + this.score + "   Temps de survie: " + (int) this.tempsDeSurvie) + "   Difficulté: " + diff + "   Précision: " + String.format("%.2f", accu) +"%"+ "   Nombre de bouclier utilisés: " + this.shieldUse);
                 String chainePv = "";
                 for(int i = 0; i < this.boss.get(0).getHp(); i++){
                     chainePv += "█████";
@@ -244,7 +287,7 @@ public class GestionJeu{
     }
 
     public void jouerUnTour(){
-        if(this.statut == 1){
+        if(this.statut == 1 && !this.gameOver){
             //Initialisation du jeu
             if(this.tourDeJeu == 0){
                 this.initialisationDuJeu();
@@ -263,7 +306,7 @@ public class GestionJeu{
             //Augmentation de la difficulté si les critères sont remplis
             if(this.timer > 55 && this.allClear() && this.multi != 10){
                 this.score += this.multi*10000*accu;
-                if(this.multi < 3){
+                if(this.multi <= 3){
                     this.incrementeMulti();
                     this.timer = 0;
                 }
@@ -273,7 +316,7 @@ public class GestionJeu{
                 }
             }
             //Génération des aliens
-            if(!gameOver && this.timer < 60 && this.multi < 3){
+            if(!gameOver && this.timer < 60 && this.multi <= 3){
                 boolean alienSommetEcran = false;
                 for(Alien alien: this.aliens){
                     if(alien.getY() == 85){
@@ -292,16 +335,28 @@ public class GestionJeu{
                 this.gameOver = true;
                 this.statusVictoire = 1;
             }
-            //Suppression des projectiles hors fenêtre et évolution des projectiles
+            //Suppression des projectiles (du vaisseau) hors fenêtre et évolution des projectiles
             List<Projectile> listeProjectilesSupp = new ArrayList<>();
             if(this.listeProj.size() > 0){
                 for(Projectile projectileElem: this.listeProj){
                     projectileElem.evolue(this.multi);
                     if(projectileElem.getY() > this.getHauteur()){
                         listeProjectilesSupp.add(projectileElem);
-                        if(this.multi == 10){
-                            this.tirDurantBoss += 1;
+                        if(!projectileElem.isShield()){
+                            if(this.multi == 10){
+                                this.tirDurantBoss += 1;
+                            }
                         }
+                    }
+                }
+            }
+            //Suppression des projectiles (aliens) hors fenêtre et évolution des projectiles
+            List<ProjectileAlien> listeProjectilesAlienSupp = new ArrayList<>();
+            if(this.listeProjAlien.size() > 0){
+                for(ProjectileAlien projectileElem: this.listeProjAlien){
+                    projectileElem.evolue(this.multi);
+                    if(projectileElem.getY() < 0){
+                        listeProjectilesAlienSupp.add(projectileElem);
                     }
                 }
             }
@@ -339,38 +394,82 @@ public class GestionJeu{
                 }
             }
             //Génération des missiles ennemis
-
+            if(!aliens.isEmpty()){
+                if(aliens.get(0).getNumberSprite() == 1){
+                    Random obj = new Random();
+                    for(Alien alienElem: aliens){
+                        int nbr = obj.nextInt(100);
+                        if(nbr > 99 - 1*this.multi){
+                            this.listeProjAlien.add(new ProjectileAlien(alienElem.positionCanonX(), alienElem.positionCanonY()));
+                        }
+                    }
+                }
+            }
+            //Génération des missiles du boss
+            if(this.multi == 10){
+                Random obj = new Random();
+                for(Boss bossElem: boss){
+                    int nbr = obj.nextInt(100);
+                    if(nbr > 65){
+                        this.listeProjAlien.add(new ProjectileAlien(bossElem.positionCanonX(), bossElem.positionCanonY()));
+                        //this.statut = 2;
+                    }
+                }
+            }
             //Collisions
             List<Alien> listeAlienSupp = new ArrayList<>();
+            List<Boss> listeBossSupp = new ArrayList<>();
+            //Recherche de collisions sur chaque projectile
             for(Projectile projectileElement: this.listeProj){
-                for(Alien alienElement: this.aliens){
-                    if(alienElement instanceof Alien){
+                if(!projectileElement.isShield()){
+                    //Collisions avec les aliens
+                    for(Alien alienElement: this.aliens){
+                        if(alienElement instanceof Alien){
+                            //Check que le projectile soit dans l'alien au niveau des X
+                            if(projectileElement.getX() + 1 >= alienElement.getX() && projectileElement.getX() <= alienElement.getX() + 21){
+                                //Check que le projectile soit dans l'alien au niveau des Y
+                                if(projectileElement.getY() <= alienElement.getY() && projectileElement.getY() >= alienElement.getY() - 8){
+                                    listeProjectilesSupp.add(projectileElement);
+                                    listeAlienSupp.add(alienElement);
+                                    this.nombreAlienTues += listeAlienSupp.size();
+                                }
+                            }
+                        }
+                    }
+                    //Collisions avec le boss
+                    for(Boss bossElem: boss){
                         //Check que le projectile soit dans l'alien au niveau des X
-                        if(projectileElement.getX() + 1 >= alienElement.getX() && projectileElement.getX() <= alienElement.getX() + 21){
+                        if(projectileElement.getX() + 1 >= bossElem.getX() && projectileElement.getX() <= bossElem.getX() + 59){
                             //Check que le projectile soit dans l'alien au niveau des Y
-                            if(projectileElement.getY() <= alienElement.getY() && projectileElement.getY() >= alienElement.getY() - 8){
+                            if(projectileElement.getY() <= bossElem.getY() && projectileElement.getY() >= bossElem.getY() - 7){
                                 listeProjectilesSupp.add(projectileElement);
-                                listeAlienSupp.add(alienElement);
-                                this.nombreAlienTues += listeAlienSupp.size();
+                                this.tirTouché += 1;
+                                this.tirDurantBoss += 1;
+                                this.score += 50*listeProjectilesSupp.size()*this.multi;
+                                if(bossElem.removeHp()){
+                                listeBossSupp.add(bossElem);
+                                }
                             }
                         }
                     }
                 }
             }
-            //Collisions avec le boss
-            List<Boss> listeBossSupp = new ArrayList<>();
-            for(Projectile projectileElement: this.listeProj){
-                for(Boss bossElem: boss){
-                    //Check que le projectile soit dans l'alien au niveau des X
-                    if(projectileElement.getX() + 1 >= bossElem.getX() && projectileElement.getX() <= bossElem.getX() + 59){
-                        //Check que le projectile soit dans l'alien au niveau des Y
-                        if(projectileElement.getY() <= bossElem.getY() && projectileElement.getY() >= bossElem.getY() - 7){
-                            listeProjectilesSupp.add(projectileElement);
-                            this.tirTouché += 1;
-                            this.tirDurantBoss += 1;
-                            this.score += 50*listeProjectilesSupp.size()*this.multi;
-                            if(bossElem.removeHp()){
-                            listeBossSupp.add(bossElem);
+            //Collisions entre les projectiles alien et le vaisseau
+            for(ProjectileAlien projectileAlienElem: listeProjAlien){
+                 //Check que le projectile soit dans l'alien au niveau des X
+                if(projectileAlienElem.getX() + 1 >= leVaisseau.getPosX() && projectileAlienElem.getX() <= leVaisseau.getPosX() + 21){
+                    //Check que le projectile soit dans l'alien au niveau des Y
+                    if(projectileAlienElem.getY() <= 8 && projectileAlienElem.getY() >= 0){
+                        this.gameOver = true;
+                        this.statusVictoire = -1;
+                    }
+                }
+                //Collisions avec les projectiles protecteurs
+                for(Projectile projectileElem: this.listeProj){
+                    if(projectileElem.isShield()){
+                        if(projectileAlienElem.getY() == projectileElem.getY() || projectileAlienElem.getY() == projectileElem.getY() + 1){
+                            if(projectileAlienElem.getX() + 1 == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() + 1){
+                                listeProjectilesAlienSupp.add(projectileAlienElem);
                             }
                         }
                     }
@@ -387,6 +486,9 @@ public class GestionJeu{
             if (!listeBossSupp.isEmpty()){
                 this.boss.removeAll(listeBossSupp);
                 this.score += 10000*listeAlienSupp.size()*this.multi;
+            }
+            if (!listeProjectilesAlienSupp.isEmpty()){
+                this.listeProjAlien.removeAll(listeProjectilesAlienSupp);
             }
             //Incrémentation des différents attributs
             this.tourDeJeu += 1;
@@ -411,33 +513,33 @@ public class GestionJeu{
                 this.listeProj = new ArrayList<>();
                 this.aliens = new ArrayList<>();
                 if(this.statusVictoire == 1){
-                    System.out.println("You won");
                 }
                 if(this.statusVictoire == -1){
-                    System.out.println("You loose");
                 }
             }
         }
-        this.tourDeJeu += 1;
-        boolean divisiblePar10 = false;
-        if(this.tourDeJeu%10 == 0){
-            divisiblePar10 = true;
-        }
-        if(divisiblePar10){
-            if(this.statut == 0){
-                this.statut = -1;
+        else{
+            this.tourDeJeu += 1;
+            boolean divisiblePar10 = false;
+            if(this.tourDeJeu%10 == 0){
+                divisiblePar10 = true;
             }
-            else{
-                if(this.statut == -1){
-                    this.statut = 0;
+            if(divisiblePar10){
+                if(this.statut == 0){
+                    this.statut = -1;
                 }
-            }
-            if(this.statut == 2){
-                this.statut = 3;
-            }
-            else{
-                if(this.statut == 3){
-                    this.statut = 2;
+                else{
+                    if(this.statut == -1){
+                        this.statut = 0;
+                    }
+                }
+                if(this.statut == 2){
+                    this.statut = 3;
+                }
+                else{
+                    if(this.statut == 3){
+                        this.statut = 2;
+                    }
                 }
             }
         }

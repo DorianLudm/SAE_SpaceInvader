@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Boss{
     private double posX;
     private double posY;
@@ -42,6 +44,27 @@ public class Boss{
             this.hp -= 1;
         }
         return result;
+    }
+
+    public double positionCanonX(){
+        Random obj = new Random();
+        int nbr = obj.nextInt(4);
+        while(nbr == 0){
+            nbr = obj.nextInt(3);
+        }
+        if(nbr == 1){
+            return this.getX() + 11;
+        }
+        if(nbr == 2){
+            return this.getX() + 29;
+        }
+        else{
+            return this.getX() + 47;
+        }
+    }
+
+    public double positionCanonY(){
+        return this.getY() - 8;
     }
 
     public EnsembleChaines getEnsembleChaines() {

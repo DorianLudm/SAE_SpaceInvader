@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Alien {
     private double posX;
     private double posY;
@@ -68,7 +70,7 @@ public class Alien {
         }
         if(this.numberSprite == 1){
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY  , "  ████          ████  ");
-            this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-1, "██    ██      ██    ██");
+            this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-1, "      ██      ██      ");
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-2, "    ██████████████    ");
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-3, "  ████  ██████  ████  ");
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-4, "██████████████████████");
@@ -78,6 +80,24 @@ public class Alien {
             this. LesChainesAlien.ajouteChaine((int) this.posX, (int) this.posY-8, "  ████          ████  ");
         }
         return this. LesChainesAlien;
+    }
+
+    public double positionCanonX(){
+        Random obj = new Random();
+        int nbr = obj.nextInt(3);
+        while(nbr == 0){
+            nbr = obj.nextInt(3);
+        }
+        if(nbr == 1){
+            return this.getX() + 3;
+        }
+        else{
+            return this.getX() + 17;
+        }
+    }
+
+    public double positionCanonY(){
+        return this.getY() - 9;
     }
 
     public void cycleSprite0to1(){

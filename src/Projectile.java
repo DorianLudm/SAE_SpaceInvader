@@ -1,14 +1,27 @@
 public class Projectile {
     protected double posX;
     protected double posY;
+    protected boolean shield;
     protected EnsembleChaines LesChainesProj;
 
     public Projectile(double X, double Y){
         this.posX = X;
         this.posY = Y;
+        this.shield = false;
         this.LesChainesProj = new EnsembleChaines();
     }
 
+    public Projectile(double X, double Y, boolean shield){
+        this.posX = X;
+        this.posY = Y;
+        this.shield = true;
+        this.LesChainesProj = new EnsembleChaines();
+    }
+
+    public boolean isShield(){
+        return this.shield;
+    }
+    
     public double getX(){
         return this.posX;
     }

@@ -73,6 +73,8 @@ public class Executable extends Application {
                     gestionnaire.toucheEspace();
                 if(key.getCode()==KeyCode.ESCAPE)
                     gestionnaire.toucheEscape();
+                if(key.getCode()==KeyCode.R)
+                    gestionnaire.toucheR();
             });
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);
