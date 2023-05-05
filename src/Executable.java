@@ -12,7 +12,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 
 
@@ -22,9 +21,45 @@ public class Executable extends Application {
     private GestionJeu gestionnaire;
     private int hauteurTexte;
     private int largeurCaractere;
+    private boolean espaceOn =false;
+    private boolean droiteOn=false;
+    private boolean gaucheOn=false;
+    private boolean rOn=false;
     public static void main(String[] args) {
         launch(args);
     }
+
+    Thread espace = new Thread(){
+        public void run(){
+            if(espaceOn){
+                gestionnaire.toucheEspace();
+            }
+        }
+    };
+
+    Thread droite = new Thread(){
+        public void run(){
+            if(droiteOn){
+                gestionnaire.toucheDroite();
+            }
+        }
+    };
+
+    Thread gauche = new Thread(){
+        public void run(){
+            if(gaucheOn){
+                gestionnaire.toucheGauche();
+            }
+        }
+    };
+
+    Thread r = new Thread(){
+        public void run(){
+            if(rOn){
+                gestionnaire.toucheR();
+            }
+        }
+    };
 
     private void afficherCaracteres(){
         caracteres.getChildren().clear();
@@ -44,6 +79,10 @@ public class Executable extends Application {
                         @Override public void handle(ActionEvent actionEvent) {
                             gestionnaire.jouerUnTour();
                             afficherCaracteres();
+                            r.run();
+                            espace.run();
+                            droite.run();
+                            gauche.run();
                         }
                     }),
                 new KeyFrame(Duration.seconds(0.025))
@@ -64,17 +103,30 @@ public class Executable extends Application {
             largeurCaractere = (int) t.getLayoutBounds().getWidth();
 
             Scene scene = new Scene(root,gestionnaire.getLargeur()*largeurCaractere,gestionnaire.getHauteur()*hauteurTexte);
-            scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            scene.setOnKeyPressed((key) -> {
                 if(key.getCode()==KeyCode.LEFT)
-                    gestionnaire.toucheGauche();
+                    this.gaucheOn = true;
                 if(key.getCode()==KeyCode.RIGHT)
-                    gestionnaire.toucheDroite();
+                    this.droiteOn = true;
                 if(key.getCode()==KeyCode.SPACE)
-                    gestionnaire.toucheEspace();
+                    this.espaceOn = true;
                 if(key.getCode()==KeyCode.ESCAPE)
                     gestionnaire.toucheEscape();
                 if(key.getCode()==KeyCode.R)
-                    gestionnaire.toucheR();
+                    this.rOn = true;
+            });
+
+            scene.setOnKeyReleased((key) -> {
+                if(key.getCode()==KeyCode.LEFT)
+                    this.gaucheOn = false;
+                if(key.getCode()==KeyCode.RIGHT)
+                    this.droiteOn = false;
+                if(key.getCode()==KeyCode.SPACE)
+                    this.espaceOn = false;
+                if(key.getCode()==KeyCode.ESCAPE)
+                    gestionnaire.toucheEscape();
+                if(key.getCode()==KeyCode.R)
+                    this.rOn = false;
             });
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);

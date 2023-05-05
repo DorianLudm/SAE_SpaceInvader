@@ -42,7 +42,7 @@ public class GestionJeu{
         this.tempsDeSurvie = 0;
         this.timer = 0;
         this.multi = 10;
-        this.typeDerniereVague = 0;
+        this.typeDerniereVague = 0 ;
         this.nombreAlienTues = 0;
         this.nombreProjTiré = 0;
         this.tirDurantBoss = 0;
@@ -69,7 +69,7 @@ public class GestionJeu{
                 leVaisseau.deplace(-5, decal);
         }
     }
-    
+
     public void toucheDroite(){
         if(this.statut == 1){
             int decal = this.multi;
@@ -106,7 +106,7 @@ public class GestionJeu{
 
     public void toucheR(){
         if(this.multi == 10 && this.statut == 1 && shootingCooldown == 0){
-            shootingCooldown = 75;
+            shootingCooldown = 200;
             this.shieldUse += 1;
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 14, 6, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 12, 6, true));
@@ -148,6 +148,9 @@ public class GestionJeu{
                     this.chaines.union(bossElem.getEnsembleChaines());
                 }
                 this.chaines.union(this.getText());
+            }
+            else{
+                this.chaines.union(getTextGameOver());
             }
         }
         return this.chaines;
@@ -270,10 +273,13 @@ public class GestionJeu{
                 }
                 text.ajouteChaine(5, hauteur, ("Score: " + this.score + "   Temps de survie: " + (int) this.tempsDeSurvie) + "   Difficulté: " + diff + "   Précision: " + String.format("%.2f", accu) +"%"+ "   Nombre de bouclier utilisés: " + this.shieldUse);
                 String chainePv = "";
-                for(int i = 0; i < this.boss.get(0).getHp(); i++){
-                    chainePv += "█████";
-                text.ajouteChaine(25, hauteur-4, chainePv);
-                text.ajouteChaine(25, hauteur-5, chainePv);
+                if(!this.boss.isEmpty()){
+                    int pv = this.boss.get(0).getHp();
+                    for(int i = 0; i < pv; i++){
+                        chainePv += "█████";
+                    } 
+                    text.ajouteChaine(25, hauteur-4, chainePv);
+                    text.ajouteChaine(25, hauteur-5, chainePv);
                 }
             }
             else{
@@ -282,6 +288,30 @@ public class GestionJeu{
         }
         if(this.statut == 2){
             text.ajouteChaine(125, 20, "Appuyer sur ESPACE pour reprendre votre partie!");
+        }
+        return text;
+    }
+
+    public EnsembleChaines getTextGameOver(){
+        EnsembleChaines text = new EnsembleChaines();
+        text.ajouteChaine(118,75,"   ___                         ___                  _ ");
+        text.ajouteChaine(118,74,"  / _ \\__ _ _ __ ___   ___    /___\\__   _____ _ __ / \\");
+        text.ajouteChaine(118,73," / /_\\/ _` | '_ ` _ \\ / _ \\  //  //\\ \\ / / _ \\ '__/  /");      
+        text.ajouteChaine(118,72,"/ /_\\\\ (_| | | | | | |  __/ / \\_//  \\ V /  __/ | /\\_/ ");
+        text.ajouteChaine(118,71,"\\____/\\__,_|_| |_| |_|\\___| \\___/    \\_/ \\___|_| \\/   ");
+        if(this.statusVictoire == 1){
+            text.ajouteChaine(124, 60, "                  __    __              _             ");
+            text.ajouteChaine(124, 59, "/\\_/\\___  _   _  / / /\\ \\ \\___  _ __   / \\            ");
+            text.ajouteChaine(124, 58, "\\_ _/ _ \\| | | | \\ \\/  \\/ / _ \\| '_ \\ /  /            ");
+            text.ajouteChaine(124, 57, " / \\ (_) | |_| |  \\  /\\  / (_) | | | /\\_/             ");
+            text.ajouteChaine(124, 56, " \\_/\\___/ \\__,_|   \\/  \\/ \\___/|_| |_\\/               ");
+        }
+        else{
+            text.ajouteChaine(121, 60, "                    __                        _       ");
+            text.ajouteChaine(121, 59, "/\\_/\\___  _   _    / /  ___   ___  ___  ___  / \\      ");
+            text.ajouteChaine(121, 58, "\\_ _/ _ \\| | | |  / /  / _ \\ / _ \\/ __|/ _ \\/  /      ");
+            text.ajouteChaine(121, 57, " / \\ (_) | |_| | / /__| (_) | (_) \\__ \\  __/\\_/       ");
+            text.ajouteChaine(121, 56, " \\_/\\___/ \\__,_| \\____/\\___/ \\___/|___/\\___\\/         ");
         }
         return text;
     }
@@ -412,7 +442,6 @@ public class GestionJeu{
                     int nbr = obj.nextInt(100);
                     if(nbr > 65){
                         this.listeProjAlien.add(new ProjectileAlien(bossElem.positionCanonX(), bossElem.positionCanonY()));
-                        //this.statut = 2;
                     }
                 }
             }
@@ -510,7 +539,8 @@ public class GestionJeu{
             }
             //Gestion de l'interface si il y a un GameOver
             if(gameOver){
-                this.listeProj = new ArrayList<>();
+                System.out.println(this.statusVictoire);
+                this.listeProj = new ArrayList<>(); 
                 this.aliens = new ArrayList<>();
                 if(this.statusVictoire == 1){
                 }

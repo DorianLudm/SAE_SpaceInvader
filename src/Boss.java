@@ -44,7 +44,7 @@ public class Boss{
             this.hp -= 1;
         }
         return result;
-    }
+    } 
 
     public double positionCanonX(){
         Random obj = new Random();
