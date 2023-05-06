@@ -41,6 +41,9 @@ public class Projectile {
             this.posY += 1*multi;
         }
         else{
+            if(this.shield){
+                this.posY += 1;
+            }
             this.posY += 1;
         }
     }

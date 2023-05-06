@@ -48,10 +48,8 @@ public class Boss{
 
     public double positionCanonX(){
         Random obj = new Random();
-        int nbr = obj.nextInt(4);
-        while(nbr == 0){
-            nbr = obj.nextInt(3);
-        }
+        int nbr = obj.nextInt(3);
+        nbr += 1;
         if(nbr == 1){
             return this.getX() + 11;
         }

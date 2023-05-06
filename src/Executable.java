@@ -127,6 +127,8 @@ public class Executable extends Application {
                     gestionnaire.toucheEscape();
                 if(key.getCode()==KeyCode.R)
                     this.rOn = false;
+                if(key.getCode()==KeyCode.A)
+                    gestionnaire.restart();
             });
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);

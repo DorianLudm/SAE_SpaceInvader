@@ -21,8 +21,8 @@ public class GestionJeu{
     private int typeDerniereVague;
     private int nombreAlienTues;
     private int nombreProjTiré;
-    private double tirDurantBoss;
-    private double tirTouché;
+    private int tirDurantBoss;
+    private int tirTouché;
     private int statut;
     private int shieldUse;
 
@@ -41,7 +41,7 @@ public class GestionJeu{
         this.score = 0;
         this.tempsDeSurvie = 0;
         this.timer = 0;
-        this.multi = 10;
+        this.multi = 1;
         this.typeDerniereVague = 0 ;
         this.nombreAlienTues = 0;
         this.nombreProjTiré = 0;
@@ -65,8 +65,8 @@ public class GestionJeu{
             if(decal == 10){
                 decal = 1;
             }
-            if(leVaisseau.getPosX() - (5*decal) >= 0)
-                leVaisseau.deplace(-5, decal);
+            if(leVaisseau.getPosX() - (3*decal) >= 0)
+                leVaisseau.deplace(-3, decal);
         }
     }
 
@@ -76,8 +76,8 @@ public class GestionJeu{
             if(decal == 10){
                 decal = 1;
             }
-            if(leVaisseau.getPosX() + (5*decal) < this.getLargeur() - 21)
-                leVaisseau.deplace(5, decal);
+            if(leVaisseau.getPosX() + (3*decal) < this.getLargeur() - 21)
+                leVaisseau.deplace(3, decal);
         }
     }
 
@@ -106,10 +106,14 @@ public class GestionJeu{
 
     public void toucheR(){
         if(this.multi == 10 && this.statut == 1 && shootingCooldown == 0){
-            shootingCooldown = 200;
+            this.score -= 1000;
+            shootingCooldown = 150;
             this.shieldUse += 1;
-            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 14, 6, true));
-            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 12, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 19 , 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 17, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 15, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 15, 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 13, 7, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 11, 7, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 9 , 7, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() - 7 , 7, true));
@@ -123,11 +127,40 @@ public class GestionJeu{
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 7 , 7, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 9 , 7, true));
             this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 11, 7, true));
-            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 12, 6, true));
-            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 14, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 13, 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 15, 7, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 15, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 17, 6, true));
+            this.listeProj.add(new Projectile(leVaisseau.positionCanon() + 19, 6, true));
         }
     }
 
+    public void restart(){
+        if(this.gameOver){
+            this.chaines = new EnsembleChaines();
+            this.leVaisseau = new Vaisseau();
+            this.listeProj = new ArrayList<>();
+            this.listeProjAlien = new ArrayList<>();
+            this.aliens = new ArrayList<>();
+            this.boss = new ArrayList<>();
+            this.tourDeJeu = 0;
+            this.shootingCooldown = 0;
+            this.spawnCooldown = 0;
+            this.gameOver = false;
+            this.statusVictoire = 0;
+            this.score = 0;
+            this.tempsDeSurvie = 0;
+            this.timer = 0;
+            this.multi = 1;
+            this.typeDerniereVague = 0 ;
+            this.nombreAlienTues = 0;
+            this.nombreProjTiré = 0;
+            this.tirDurantBoss = 0;
+            this.tirTouché = 0;
+            this.statut = 0;
+            this.shieldUse = 0;
+        }
+    }
     public EnsembleChaines getChaines(){
         this.chaines = new EnsembleChaines();
         if(this.statut == 0 || this.statut == -1)
@@ -182,7 +215,7 @@ public class GestionJeu{
     }
 
     public void summonAllien(){
-        this.spawnCooldown = (float) 5 - (float) (0.5 * this.multi);
+        this.spawnCooldown = (float) 5 - (float) (0.8 * this.multi);
         int nouvelleVague = 0;
         Random rand = new Random();
         List<Integer> nouvelleVaguePossible = new ArrayList<>();
@@ -294,24 +327,58 @@ public class GestionJeu{
 
     public EnsembleChaines getTextGameOver(){
         EnsembleChaines text = new EnsembleChaines();
-        text.ajouteChaine(118,75,"   ___                         ___                  _ ");
-        text.ajouteChaine(118,74,"  / _ \\__ _ _ __ ___   ___    /___\\__   _____ _ __ / \\");
-        text.ajouteChaine(118,73," / /_\\/ _` | '_ ` _ \\ / _ \\  //  //\\ \\ / / _ \\ '__/  /");      
-        text.ajouteChaine(118,72,"/ /_\\\\ (_| | | | | | |  __/ / \\_//  \\ V /  __/ | /\\_/ ");
-        text.ajouteChaine(118,71,"\\____/\\__,_|_| |_| |_|\\___| \\___/    \\_/ \\___|_| \\/   ");
+        text.ajouteChaine(125,75,"   ___                         ___                  _ ");
+        text.ajouteChaine(125,74,"  / _ \\__ _ _ __ ___   ___    /___\\__   _____ _ __ / \\");
+        text.ajouteChaine(125,73," / /_\\/ _` | '_ ` _ \\ / _ \\  //  //\\ \\ / / _ \\ '__/  /");      
+        text.ajouteChaine(125,72,"/ /_\\\\ (_| | | | | | |  __/ / \\_//  \\ V /  __/ | /\\_/ ");
+        text.ajouteChaine(125,71,"\\____/\\__,_|_| |_| |_|\\___| \\___/    \\_/ \\___|_| \\/   ");
         if(this.statusVictoire == 1){
-            text.ajouteChaine(124, 60, "                  __    __              _             ");
-            text.ajouteChaine(124, 59, "/\\_/\\___  _   _  / / /\\ \\ \\___  _ __   / \\            ");
-            text.ajouteChaine(124, 58, "\\_ _/ _ \\| | | | \\ \\/  \\/ / _ \\| '_ \\ /  /            ");
-            text.ajouteChaine(124, 57, " / \\ (_) | |_| |  \\  /\\  / (_) | | | /\\_/             ");
-            text.ajouteChaine(124, 56, " \\_/\\___/ \\__,_|   \\/  \\/ \\___/|_| |_\\/               ");
+            text.ajouteChaine(130, 60, "                  __    __              _             ");
+            text.ajouteChaine(130, 59, "/\\_/\\___  _   _  / / /\\ \\ \\___  _ __   / \\            ");
+            text.ajouteChaine(130, 58, "\\_ _/ _ \\| | | | \\ \\/  \\/ / _ \\| '_ \\ /  /            ");
+            text.ajouteChaine(130, 57, " / \\ (_) | |_| |  \\  /\\  / (_) | | | /\\_/             ");
+            text.ajouteChaine(130, 56, " \\_/\\___/ \\__,_|   \\/  \\/ \\___/|_| |_\\/               ");
         }
         else{
-            text.ajouteChaine(121, 60, "                    __                        _       ");
-            text.ajouteChaine(121, 59, "/\\_/\\___  _   _    / /  ___   ___  ___  ___  / \\      ");
-            text.ajouteChaine(121, 58, "\\_ _/ _ \\| | | |  / /  / _ \\ / _ \\/ __|/ _ \\/  /      ");
-            text.ajouteChaine(121, 57, " / \\ (_) | |_| | / /__| (_) | (_) \\__ \\  __/\\_/       ");
-            text.ajouteChaine(121, 56, " \\_/\\___/ \\__,_| \\____/\\___/ \\___/|___/\\___\\/         ");
+            text.ajouteChaine(127, 60, "                    __                         _       ");
+            text.ajouteChaine(127, 59, "/\\_/\\___  _   _    / /  ___   ___  ___  ___  / \\      ");
+            text.ajouteChaine(127, 58, "\\_ _/ _ \\| | | |  / /  / _ \\ / _ \\/ __|/ _ \\/  /      ");
+            text.ajouteChaine(127, 57, " / \\ (_) | |_| | / /__| (_) | (_) \\__ \\  __/\\_/       ");
+            text.ajouteChaine(127, 56, " \\_/\\___/ \\__,_| \\____/\\___/ \\___/|___/\\___\\/         ");
+        }
+        text.ajouteChaine(130, 50, "Statistiques de la partie:");
+        text.ajouteChaine(130, 49, "-------------------------------");
+        text.ajouteChaine(130, 48, "Score: " + this.score);
+        if(this.multi == 10){
+            double accu = 0;
+            if(this.tirDurantBoss != 0){
+                accu = this.tirTouché / this.tirDurantBoss * 100;
+            }
+            text.ajouteChaine(130, 47, "Vague atteinte: BOSS");
+            text.ajouteChaine(130, 43, "Nombre de projectiles tirés lors du boss: " + this.tirDurantBoss);
+            text.ajouteChaine(130, 42, "Précision lors du BOSS: " + String.format("%.2f", accu) +"%");
+            text.ajouteChaine(130, 41, "Nombre de boucliers utilisés: " + this.shieldUse);
+        }
+        else{
+            text.ajouteChaine(130, 47, "Vague atteinte: " + this.multi);
+        }
+        text.ajouteChaine(130, 46, "Nombre d'aliens tués: " + this.nombreAlienTues);
+        int nbTirTotal = this.nombreProjTiré + this.tirDurantBoss;
+        text.ajouteChaine(130, 45, "Nombre de projectiles tirés: " + nbTirTotal);
+        double accu2 = 0;
+        if(this.nombreProjTiré != 0){
+            accu2 = (double) this.nombreAlienTues / (double) this.nombreProjTiré * 100; 
+        }
+        text.ajouteChaine(130, 44, "Précision lors des trois premières vagues " + String.format("%.2f", accu2) +"%");
+        if(this.statut == 1){
+            this.statut = 3;
+        }
+        if(this.statut == 3){
+            this.statut = 4;
+            text.ajouteChaine(130 , 36, "Appuyer sur A pour relancer une partie! ");
+        }
+        if(this.statut == 4){
+            this.statut = 3;
         }
         return text;
     }
@@ -334,7 +401,7 @@ public class GestionJeu{
                 accu = (double) this.nombreAlienTues / (double) this.nombreProjTiré;
             }
             //Augmentation de la difficulté si les critères sont remplis
-            if(this.timer > 55 && this.allClear() && this.multi != 10){
+            if(this.timer > 25 && this.allClear() && this.multi != 10){
                 this.score += this.multi*10000*accu;
                 if(this.multi <= 3){
                     this.incrementeMulti();
@@ -346,7 +413,7 @@ public class GestionJeu{
                 }
             }
             //Génération des aliens
-            if(!gameOver && this.timer < 60 && this.multi <= 3){
+            if(!gameOver && this.timer < 30 && this.multi <= 3){
                 boolean alienSommetEcran = false;
                 for(Alien alien: this.aliens){
                     if(alien.getY() == 85){
@@ -415,6 +482,12 @@ public class GestionJeu{
                 if(gameOverParAlien){
                     this.gameOver = true;
                     this.statusVictoire = -1;
+                    if(this.multi == 10){
+                        this.tirDurantBoss += this.listeProj.size();
+                    }
+                    else{
+                        this.nombreProjTiré += this.listeProj.size();
+                    }
                 }
             }
             //Evolution des boss
@@ -438,14 +511,23 @@ public class GestionJeu{
             //Génération des missiles du boss
             if(this.multi == 10){
                 Random obj = new Random();
-                for(Boss bossElem: boss){
-                    int nbr = obj.nextInt(100);
-                    if(nbr > 65){
-                        this.listeProjAlien.add(new ProjectileAlien(bossElem.positionCanonX(), bossElem.positionCanonY()));
+                for(int i = 0; i < 5; i++){
+                    for(Boss bossElem: boss){
+                        int nbr = obj.nextInt(100);
+                        if(nbr > 85){
+                            this.listeProjAlien.add(new ProjectileAlien(bossElem.positionCanonX(), bossElem.positionCanonY()));
+                        }
+                        nbr = obj.nextInt(100);
+                        Random obj1 = new Random();
+                        if(nbr > 95){
+                            this.listeProjAlien.add(new ProjectileAlien(obj1.nextInt(this.getLargeur()), this.getHauteur(), 1));
+                            this.listeProjAlien.add(new ProjectileAlien(obj1.nextInt(this.getLargeur()), this.getHauteur(), 1));
+                        }
                     }
                 }
             }
             //Collisions
+            //Génération des listes qui vont contenir les éléments à supprimé
             List<Alien> listeAlienSupp = new ArrayList<>();
             List<Boss> listeBossSupp = new ArrayList<>();
             //Recherche de collisions sur chaque projectile
@@ -476,7 +558,8 @@ public class GestionJeu{
                                 this.tirDurantBoss += 1;
                                 this.score += 50*listeProjectilesSupp.size()*this.multi;
                                 if(bossElem.removeHp()){
-                                listeBossSupp.add(bossElem);
+                                    listeBossSupp.add(bossElem);
+                                    this.nombreAlienTues += 1;
                                 }
                             }
                         }
@@ -493,12 +576,24 @@ public class GestionJeu{
                         this.statusVictoire = -1;
                     }
                 }
-                //Collisions avec les projectiles protecteurs
+                //Collisions avec les projectiles protecteurs 
                 for(Projectile projectileElem: this.listeProj){
                     if(projectileElem.isShield()){
-                        if(projectileAlienElem.getY() == projectileElem.getY() || projectileAlienElem.getY() == projectileElem.getY() + 1){
-                            if(projectileAlienElem.getX() + 1 == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() + 1){
+                        if(projectileAlienElem.getY() > projectileElem.getY() - 2 && projectileAlienElem.getY() <= projectileElem.getY() + 2 ){
+                            if(projectileAlienElem.getX() == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() + 1 || projectileAlienElem.getX() + 1 == projectileElem.getX()){
                                 listeProjectilesAlienSupp.add(projectileAlienElem);
+                            }
+                        }
+                    }
+                    //Collisions avec les projectiles de base
+                    else{
+                        if(projectileAlienElem.getSrite() == 1){
+                            if(projectileAlienElem.getY() == projectileElem.getY() || projectileAlienElem.getY() == projectileElem.getY() + 1 || projectileAlienElem.getY() + 1 == projectileElem.getY()){
+                                if(projectileAlienElem.getX() + 1 == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() || projectileAlienElem.getX() == projectileElem.getX() + 1){
+                                    listeProjectilesAlienSupp.add(projectileAlienElem);
+                                    listeProjectilesSupp.add(projectileElem); 
+                                    this.score += 150; 
+                                }  
                             }
                         }
                     }
